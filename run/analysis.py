@@ -13,11 +13,11 @@ import pickle
 from optimization_fixed_connectivity import mechanism_synthesis_optimization_fixed_con
 
 # First load in data
-run_index = 4
-target_index = 3
+target_index = 4
+run_index = 5
 problem_name = mechanism_synthesis_optimization_fixed_con.save_name
 save_name = ct.generate_save_name(problem_name, target_index, run_index)
-with open(save_name, 'rb') as f:  # Python 3: open(..., 'rb')
+with open(save_name, 'rb') as f:
    results, problem = pickle.load(f)
 
 # Initialize an empty list to store target curves

@@ -30,14 +30,14 @@ from optimization_fixed_connectivity import mechanism_synthesis_optimization_fix
 
 # First load in data
 # winners:
-# 0: 2, 0.83
-# 1: 1, .616
-# 2: 2, .786
-# 3: 3, .574
-# 4: 1, .52
-# 5: 0, .458
-run_index = 3
-target_index = 3
+# 0*: 3 (loop1), 0.858
+# 1*: 4 (line1 VG), .801
+# 2*: 3 (loop1), .891
+# 3: 5 (loop1 .811 overwritten), 6 (loop 2 0.80), 5 (line 1 VM .811)
+# 4: 3 (loop2), .804 | try again
+# 5*: 2 (loop1), .87
+target_index = 1
+run_index = 4
 problem_name = mechanism_synthesis_optimization_fixed_con.save_name
 save_name = ct.generate_save_name(problem_name, target_index, run_index)
 with open(save_name, 'rb') as f:  # Python 3: open(..., 'rb')

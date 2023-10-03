@@ -126,67 +126,73 @@ if __name__ == "__main__":
         target_curves.append(np.loadtxt('../data/%i.csv' % (i), delimiter=','))
 
     # Get target curve 0 and plot
-    target_index = 3
-    run_index = 4
-    seed = 50
+    target_index = 4
+    run_index = 5
+    seed = 150
     np.random.seed(seed)
     target_curve = np.array(target_curves[target_index])
 
-    nl0_targets = [0]
-    nl1_targets = [2, 4, 5]
-    nl2_targets = [3]
+    nl1_targets = [0, 2, 5]
+    nl2_targets = [4]
+    nl3_targets = []
+    line_ground_targets = [1]
+    line_motor_targets = [3]
 
     # Create desired connectivity graph
     C, fixed_nodes, motor = conc.generate_4bar_connectivity()
     # There is now 1 loop (motor) and 1 line
-    if target_index in nl0_targets: # 1 NL layer
-        print("NL 0 layer")
+    if target_index in nl1_targets: # 1 NL layer
+        print("NL 1 layer")
         # add a loop node
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]])
-    elif target_index == 1:
-        # output is a line. output from 2 lines
+    elif target_index in line_ground_targets: # output is a line. output from 2 lines
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
-        C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, lines[-1])
+        C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, lines[-1])  # append to other link
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C = conc.append_node_with_connectivity(C, [lines[0], lines[-1]]) # line, NL 1
-    elif target_index in nl1_targets: # 1 NL layer
-        print("NL 1 layer")
-        # first add a loop node
-        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
+    elif target_index in line_motor_targets: # output is a line. output from 2 lines
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
-        C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]])
-        # add 1 layer of nonlinearity
-        # then add another ground node, conn to motor
-        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
+        C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, motor[-1]) # append to motor
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
-        C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, motor[-1]) # line, NL 1
-        # lastly add the loop of NL 1 to new line and loop
-        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
-        lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
-        C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]]) # loop, NL 1
-    elif target_index in nl2_targets: # 2 NL layers
+        C = conc.append_node_with_connectivity(C, [lines[0], lines[-1]]) # line, NL 1
+    elif target_index in nl2_targets: # 2 NL layer
         print("NL 2 layer")
         # first add a loop node
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]])
         # add 1 layer of nonlinearity
-        # then add another ground node, conn to motor
+        # add a ground node, conn to motor
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, motor[-1]) # line, NL 1
-        # lastly add the loop of NL 1 to new line and loop
+        # add the loop of NL 1 to new line and loop
+        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
+        lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
+        C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]]) # loop, NL 1
+    elif target_index in nl3_targets: # 3 NL layers
+        print("NL 3 layer")
+        # first add a loop node
+        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
+        lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
+        C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]])
+        # add 1 layer of nonlinearity
+        # add a ground node, conn to motor
+        loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
+        lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
+        C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, motor[-1]) # line, NL 1
+        # add the loop of NL 1 to new line and loop
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]]) # loop, NL 1
         # add 2nd layer of nonlinearity
-        # add another ground node, conn to motor
+        # add a ground node, conn to motor
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C, fixed_nodes = conc.append_ground_to_node(C, fixed_nodes, motor[-1]) # line, NL 1
-        # lastly add the loop of NL 2 to new line and loop
+        # add the loop of NL 2 to new line and loop
         loops = conc.get_list_of_loop_nodes(C, fixed_nodes, motor)
         lines = conc.get_list_of_line_nodes(C, fixed_nodes, motor)
         C = conc.append_node_with_connectivity(C, [loops[-1], lines[-1]]) # loop, NL 2
@@ -201,14 +207,14 @@ if __name__ == "__main__":
     from pymoo.algorithms.moo.nsga2 import RankAndCrowdingSurvival
 
     # Set up GA with pop size of 100 -- see pymoo docs for more info on these settings!
-    algorithm = NSGA2(pop_size=200, sampling=MixedVariableSampling(),
+    algorithm = NSGA2(pop_size=500, sampling=MixedVariableSampling(),
                       mating=MixedVariableMating(eliminate_duplicates=MixedVariableDuplicateElimination()),
                       crossover=SBX(eta=0.2, prob=0.9),
                       mutation=GaussianMutation(sigma=1.0),
                       survival=RankAndCrowdingSurvival(),
                       eliminate_duplicates=MixedVariableDuplicateElimination())
 
-    n_gen = 50
+    n_gen = 300
     results = minimize(problem,
                        algorithm,
                        ('n_gen', n_gen),
